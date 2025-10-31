@@ -120,7 +120,7 @@ const ReviewHub = () => {
     };
 
     try {
-      const response = await fetch('https://synergaise.app.n8n.cloud/webhook/13e2cfdd-9291-4609-abe9-b545ac5c270e', {
+      const response = await fetch('https://synergaise.app.n8n.cloud/webhook-test/13e2cfdd-9291-4609-abe9-b545ac5c270e', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
