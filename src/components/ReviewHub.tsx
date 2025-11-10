@@ -23,6 +23,139 @@ interface UploadedFile {
   data: string;
 }
 
+// Extracted components to prevent re-creation on each render
+const StarRating = ({ value, onChange }: { value: number; onChange: (value: number) => void }) => (
+  <div className="flex gap-2">
+    {[1, 2, 3, 4, 5].map(star => (
+      <Star
+        key={star}
+        className={`w-8 h-8 cursor-pointer transition-all duration-200 ${
+          star <= value ? 'fill-secondary text-secondary' : 'text-muted-foreground'
+        }`}
+        onClick={() => onChange(star)}
+      />
+    ))}
+  </div>
+);
+
+const TextInput = ({ 
+  id, 
+  label, 
+  type = 'text', 
+  required, 
+  placeholder, 
+  maxLength,
+  value,
+  onChange,
+  error
+}: {
+  id: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  maxLength?: number;
+  value: string;
+  onChange: (id: string, value: string) => void;
+  error?: string | null;
+}) => (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-foreground">
+      {label} {!required && <span className="text-muted-foreground">(optional)</span>}
+    </label>
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(id, e.target.value)}
+      placeholder={placeholder}
+      maxLength={maxLength}
+      className="w-full px-4 py-3 bg-input border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+    />
+    {maxLength && (
+      <div className="text-xs text-muted-foreground text-right font-metrics">
+        {value.length} / {maxLength}
+      </div>
+    )}
+    {error && <p className="text-destructive text-sm">{error}</p>}
+  </div>
+);
+
+const TextArea = ({ 
+  id, 
+  label, 
+  required, 
+  placeholder, 
+  maxLength = 1000,
+  value,
+  onChange,
+  error
+}: {
+  id: string;
+  label: string;
+  required?: boolean;
+  placeholder?: string;
+  maxLength?: number;
+  value: string;
+  onChange: (id: string, value: string) => void;
+  error?: string | null;
+}) => (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-foreground">
+      {label} {!required && <span className="text-muted-foreground">(optional)</span>}
+    </label>
+    <textarea
+      value={value}
+      onChange={(e) => onChange(id, e.target.value)}
+      placeholder={placeholder}
+      maxLength={maxLength}
+      rows={4}
+      className="w-full px-4 py-3 bg-input border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-all duration-200"
+    />
+    <div className="text-xs text-muted-foreground text-right font-metrics">
+      {value.length} / {maxLength}
+    </div>
+    {error && <p className="text-destructive text-sm">{error}</p>}
+  </div>
+);
+
+const SingleChoice = ({ 
+  id, 
+  label, 
+  choices, 
+  required,
+  value,
+  onChange,
+  error
+}: {
+  id: string;
+  label: string;
+  choices: string[];
+  required?: boolean;
+  value: string;
+  onChange: (id: string, value: string) => void;
+  error?: string | null;
+}) => (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-foreground">{label}</label>
+    <div className="space-y-2">
+      {choices.map(choice => (
+        <label key={choice} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-primary/10 transition-all duration-200">
+          <input
+            type="radio"
+            name={id}
+            value={choice}
+            checked={value === choice}
+            onChange={(e) => onChange(id, e.target.value)}
+            className="w-5 h-5 text-primary accent-primary"
+          />
+          <span className="group-hover:text-primary transition-colors duration-200">{choice}</span>
+        </label>
+      ))}
+    </div>
+    {error && <p className="text-destructive text-sm">{error}</p>}
+  </div>
+);
+
 const ReviewHub = () => {
   const [currentPage, setCurrentPage] = useState<PageType>('landing');
   const [formData, setFormData] = useState<FormData>({});
@@ -137,102 +270,6 @@ const ReviewHub = () => {
     }
   };
 
-  const StarRating = ({ value, onChange }: { value: number; onChange: (value: number) => void }) => (
-    <div className="flex gap-2">
-      {[1, 2, 3, 4, 5].map(star => (
-        <Star
-          key={star}
-          className={`w-8 h-8 cursor-pointer transition-all duration-200 ${
-            star <= value ? 'fill-secondary text-secondary' : 'text-muted-foreground'
-          }`}
-          onClick={() => onChange(star)}
-        />
-      ))}
-    </div>
-  );
-
-  const TextInput = ({ id, label, type = 'text', required, placeholder, maxLength }: {
-    id: string;
-    label: string;
-    type?: string;
-    required?: boolean;
-    placeholder?: string;
-    maxLength?: number;
-  }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-foreground">
-        {label} {!required && <span className="text-muted-foreground">(optional)</span>}
-      </label>
-      <input
-        type={type}
-        value={formData[id] || ''}
-        onChange={(e) => handleInputChange(id, e.target.value)}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        className="w-full px-4 py-3 bg-input border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-      />
-      {maxLength && (
-        <div className="text-xs text-muted-foreground text-right font-metrics">
-          {(formData[id] || '').length} / {maxLength}
-        </div>
-      )}
-      {errors[id] && <p className="text-destructive text-sm">{errors[id]}</p>}
-    </div>
-  );
-
-  const TextArea = ({ id, label, required, placeholder, maxLength = 1000 }: {
-    id: string;
-    label: string;
-    required?: boolean;
-    placeholder?: string;
-    maxLength?: number;
-  }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-foreground">
-        {label} {!required && <span className="text-muted-foreground">(optional)</span>}
-      </label>
-      <textarea
-        value={formData[id] || ''}
-        onChange={(e) => handleInputChange(id, e.target.value)}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        rows={4}
-        className="w-full px-4 py-3 bg-input border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-all duration-200"
-      />
-      <div className="text-xs text-muted-foreground text-right font-metrics">
-        {(formData[id] || '').length} / {maxLength}
-      </div>
-      {errors[id] && <p className="text-destructive text-sm">{errors[id]}</p>}
-    </div>
-  );
-
-  const SingleChoice = ({ id, label, choices, required }: {
-    id: string;
-    label: string;
-    choices: string[];
-    required?: boolean;
-  }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-foreground">{label}</label>
-      <div className="space-y-2">
-        {choices.map(choice => (
-          <label key={choice} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-primary/10 transition-all duration-200">
-            <input
-              type="radio"
-              name={id}
-              value={choice}
-              checked={formData[id] === choice}
-              onChange={(e) => handleInputChange(id, e.target.value)}
-              className="w-5 h-5 text-primary accent-primary"
-            />
-            <span className="group-hover:text-primary transition-colors duration-200">{choice}</span>
-          </label>
-        ))}
-      </div>
-      {errors[id] && <p className="text-destructive text-sm">{errors[id]}</p>}
-    </div>
-  );
-
   if (currentPage === 'landing') {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
@@ -292,15 +329,42 @@ const ReviewHub = () => {
           </div>
 
           <div className="space-y-6 bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
-            <TextInput id="name" label="Full Name" required maxLength={100} />
-            <TextInput id="company" label="Company Name" required maxLength={100} />
-            <TextInput id="email" label="Email" type="email" maxLength={100} />
+            <TextInput 
+              id="name" 
+              label="Full Name" 
+              required 
+              maxLength={100} 
+              value={formData['name'] || ''} 
+              onChange={handleInputChange}
+              error={errors['name']}
+            />
+            <TextInput 
+              id="company" 
+              label="Company Name" 
+              required 
+              maxLength={100} 
+              value={formData['company'] || ''} 
+              onChange={handleInputChange}
+              error={errors['company']}
+            />
+            <TextInput 
+              id="email" 
+              label="Email" 
+              type="email" 
+              maxLength={100} 
+              value={formData['email'] || ''} 
+              onChange={handleInputChange}
+              error={errors['email']}
+            />
             
             <TextArea 
               id="q1_experience" 
               label="1. How would you describe your overall experience working with me/us?" 
               required 
               placeholder="Share your thoughts on the overall experience..."
+              value={formData['q1_experience'] || ''} 
+              onChange={handleInputChange}
+              error={errors['q1_experience']}
             />
             
             <TextArea 
@@ -308,6 +372,9 @@ const ReviewHub = () => {
               label="2. What specific problem or process did we help you solve?" 
               required 
               placeholder="Describe the challenge we addressed..."
+              value={formData['q2_problem'] || ''} 
+              onChange={handleInputChange}
+              error={errors['q2_problem']}
             />
             
             <TextArea 
@@ -315,6 +382,9 @@ const ReviewHub = () => {
               label="3. What's changed in your business or workflow since implementing the automation/solution?" 
               required 
               placeholder="Tell us about the improvements you've noticed..."
+              value={formData['q3_change'] || ''} 
+              onChange={handleInputChange}
+              error={errors['q3_change']}
             />
             
             <TextArea 
@@ -322,6 +392,9 @@ const ReviewHub = () => {
               label="4. What stood out to you most about the process or communication?" 
               required 
               placeholder="What impressed you most..."
+              value={formData['q4_standout'] || ''} 
+              onChange={handleInputChange}
+              error={errors['q4_standout']}
             />
             
             <TextArea 
@@ -329,12 +402,18 @@ const ReviewHub = () => {
               label="5. Would you recommend our services to others — and if so, why?" 
               required 
               placeholder="Your recommendation..."
+              value={formData['q5_recommend'] || ''} 
+              onChange={handleInputChange}
+              error={errors['q5_recommend']}
             />
             
             <TextArea 
               id="q6_additional" 
               label="6. Anything else you'd like to add about the results or impact so far?" 
               placeholder="Any additional thoughts or results..."
+              value={formData['q6_additional'] || ''} 
+              onChange={handleInputChange}
+              error={errors['q6_additional']}
             />
 
             <div className="space-y-2">
@@ -346,7 +425,10 @@ const ReviewHub = () => {
               id="permission" 
               label="Can we feature your review publicly on our website or proposals?" 
               choices={['Yes', 'No']} 
-              required 
+              required
+              value={formData['permission'] || ''} 
+              onChange={handleInputChange}
+              error={errors['permission']}
             />
 
             {submitError && (
@@ -402,10 +484,41 @@ const ReviewHub = () => {
           <div className="space-y-8">
             <div className="bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl space-y-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
               <h2 className="text-xl font-heading font-semibold border-b border-border pb-3">Your Information</h2>
-              <TextInput id="name" label="Full Name" required maxLength={100} />
-              <TextInput id="company" label="Company / Brand" required maxLength={100} />
-              <TextInput id="role" label="Role / Title" maxLength={100} />
-              <TextInput id="email" label="Email" type="email" maxLength={100} />
+              <TextInput 
+                id="name" 
+                label="Full Name" 
+                required 
+                maxLength={100}
+                value={formData['name'] || ''}
+                onChange={handleInputChange}
+                error={errors['name']}
+              />
+              <TextInput 
+                id="company" 
+                label="Company / Brand" 
+                required 
+                maxLength={100}
+                value={formData['company'] || ''}
+                onChange={handleInputChange}
+                error={errors['company']}
+              />
+              <TextInput 
+                id="role" 
+                label="Role / Title" 
+                maxLength={100}
+                value={formData['role'] || ''}
+                onChange={handleInputChange}
+                error={errors['role']}
+              />
+              <TextInput 
+                id="email" 
+                label="Email" 
+                type="email" 
+                maxLength={100}
+                value={formData['email'] || ''}
+                onChange={handleInputChange}
+                error={errors['email']}
+              />
             </div>
 
             <div className="bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl space-y-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
@@ -416,6 +529,9 @@ const ReviewHub = () => {
                 label="1. What challenges were you facing before working with us?" 
                 required 
                 placeholder="Describe the situation before we started working together..."
+                value={formData['q1_challenges'] || ''}
+                onChange={handleInputChange}
+                error={errors['q1_challenges']}
               />
               
               <TextArea 
@@ -423,6 +539,9 @@ const ReviewHub = () => {
                 label="2. How did you hear about us and what made you decide to move forward?" 
                 required 
                 placeholder="What influenced your decision to work with us..."
+                value={formData['q2_decision'] || ''}
+                onChange={handleInputChange}
+                error={errors['q2_decision']}
               />
               
               <TextArea 
@@ -430,6 +549,9 @@ const ReviewHub = () => {
                 label="3. What was your first impression of the setup, onboarding, or workflow design?" 
                 required 
                 placeholder="Your initial thoughts on the process..."
+                value={formData['q3_first_impression'] || ''}
+                onChange={handleInputChange}
+                error={errors['q3_first_impression']}
               />
             </div>
 
@@ -441,12 +563,18 @@ const ReviewHub = () => {
                 label="4. How has the automation or AI solution impacted your team's time, accuracy, or client experience?" 
                 required 
                 placeholder="Describe the tangible improvements..."
+                value={formData['q4_impact'] || ''}
+                onChange={handleInputChange}
+                error={errors['q4_impact']}
               />
               
               <TextArea 
                 id="q5_quantify" 
                 label="5. Can you quantify any results — time saved, leads generated, revenue improved, or tasks automated?" 
                 placeholder="Share any numbers or metrics you can..."
+                value={formData['q5_quantify'] || ''}
+                onChange={handleInputChange}
+                error={errors['q5_quantify']}
               />
               
               <TextArea 
@@ -454,6 +582,9 @@ const ReviewHub = () => {
                 label="6. What was the biggest 'aha' or most valuable part of the project for you?" 
                 required 
                 placeholder="What was the game-changing moment..."
+                value={formData['q6_aha_moment'] || ''}
+                onChange={handleInputChange}
+                error={errors['q6_aha_moment']}
               />
               
               <TextArea 
@@ -461,6 +592,9 @@ const ReviewHub = () => {
                 label="7. How would you describe working with us to someone considering doing the same?" 
                 required 
                 placeholder="What would you tell someone thinking about working with us..."
+                value={formData['q7_describe_working'] || ''}
+                onChange={handleInputChange}
+                error={errors['q7_describe_working']}
               />
 
               <div className="space-y-2">
@@ -476,7 +610,10 @@ const ReviewHub = () => {
                 id="q8_feature_permission" 
                 label="8. Would you be open to having your testimonial featured on our website or case study library?" 
                 choices={['Yes, absolutely', 'Yes, but please check with me first', 'No, keep it private']} 
-                required 
+                required
+                value={formData['q8_feature_permission'] || ''}
+                onChange={handleInputChange}
+                error={errors['q8_feature_permission']}
               />
               
               <div className="space-y-2">
