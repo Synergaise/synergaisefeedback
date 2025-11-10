@@ -239,7 +239,7 @@ const ReviewHub = () => {
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="max-w-2xl w-full space-y-8 text-center animate-in fade-in duration-700">
           <div className="flex justify-center items-center mb-8">
-            <img src="/synergaise-logo.png" alt="Synergaise" className="h-16 w-16 object-contain" />
+            <img src="/synergaise-logo.png" alt="Synergaise" className="h-24 w-24 object-contain" />
           </div>
           
           <div className="space-y-4">
