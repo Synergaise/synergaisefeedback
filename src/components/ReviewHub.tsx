@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { ChevronRight, Star, Upload, X, Check, AlertCircle } from 'lucide-react';
 
 const THEME = {
-  brandColor: '#1B52A5',
-  backgroundColor: '#0F1117',
-  textColor: '#FFFFFF',
+  brandColor: '#90B5C9',
+  backgroundColor: '#E9E6DF',
+  textColor: '#0E0E0E',
   font: 'Inter',
   logoUrl: 'https://synergaise.com/assets/logo.svg'
 };
@@ -54,7 +54,7 @@ const ReviewHub = () => {
     if (draft) {
       const { data, timestamp } = JSON.parse(draft);
       const age = Date.now() - new Date(timestamp).getTime();
-      if (age < 24 * 60 * 60 * 1000) { // 24 hours
+      if (age < 24 * 60 * 60 * 1000) {
         setFormData(data);
       }
     }
@@ -79,7 +79,7 @@ const ReviewHub = () => {
     if (!file) return;
 
     const validTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
 
     if (!validTypes.includes(file.type)) {
       setErrors(prev => ({ ...prev, logo: 'Please upload JPG, PNG, or SVG only' }));
@@ -143,8 +143,8 @@ const ReviewHub = () => {
       {[1, 2, 3, 4, 5].map(star => (
         <Star
           key={star}
-          className={`w-8 h-8 cursor-pointer transition-all ${
-            star <= value ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+          className={`w-8 h-8 cursor-pointer transition-all duration-200 ${
+            star <= value ? 'fill-secondary text-secondary' : 'text-muted-foreground'
           }`}
           onClick={() => onChange(star)}
         />
@@ -161,7 +161,7 @@ const ReviewHub = () => {
     maxLength?: number;
   }) => (
     <div className="space-y-2">
-      <label className="block text-sm font-medium">
+      <label className="block text-sm font-medium text-foreground">
         {label} {!required && <span className="text-muted-foreground">(optional)</span>}
       </label>
       <input
@@ -170,10 +170,10 @@ const ReviewHub = () => {
         onChange={(e) => handleInputChange(id, e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+        className="w-full px-4 py-3 bg-input border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
       />
       {maxLength && (
-        <div className="text-xs text-muted-foreground text-right">
+        <div className="text-xs text-muted-foreground text-right font-metrics">
           {(formData[id] || '').length} / {maxLength}
         </div>
       )}
@@ -189,7 +189,7 @@ const ReviewHub = () => {
     maxLength?: number;
   }) => (
     <div className="space-y-2">
-      <label className="block text-sm font-medium">
+      <label className="block text-sm font-medium text-foreground">
         {label} {!required && <span className="text-muted-foreground">(optional)</span>}
       </label>
       <textarea
@@ -198,9 +198,9 @@ const ReviewHub = () => {
         placeholder={placeholder}
         maxLength={maxLength}
         rows={4}
-        className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none transition-all"
+        className="w-full px-4 py-3 bg-input border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-all duration-200"
       />
-      <div className="text-xs text-muted-foreground text-right">
+      <div className="text-xs text-muted-foreground text-right font-metrics">
         {(formData[id] || '').length} / {maxLength}
       </div>
       {errors[id] && <p className="text-destructive text-sm">{errors[id]}</p>}
@@ -214,10 +214,10 @@ const ReviewHub = () => {
     required?: boolean;
   }) => (
     <div className="space-y-2">
-      <label className="block text-sm font-medium">{label}</label>
+      <label className="block text-sm font-medium text-foreground">{label}</label>
       <div className="space-y-2">
         {choices.map(choice => (
-          <label key={choice} className="flex items-center gap-3 cursor-pointer group">
+          <label key={choice} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-primary/10 transition-all duration-200">
             <input
               type="radio"
               name={id}
@@ -226,7 +226,7 @@ const ReviewHub = () => {
               onChange={(e) => handleInputChange(id, e.target.value)}
               className="w-5 h-5 text-primary accent-primary"
             />
-            <span className="group-hover:text-accent transition-colors">{choice}</span>
+            <span className="group-hover:text-primary transition-colors duration-200">{choice}</span>
           </label>
         ))}
       </div>
@@ -236,27 +236,37 @@ const ReviewHub = () => {
 
   if (currentPage === 'landing') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="max-w-2xl w-full space-y-8 text-center animate-in fade-in duration-700">
-          <img src={THEME.logoUrl} alt="Synergaise" className="h-12 mx-auto" />
-          <h1 className="text-4xl font-bold">🌟 Share Your Experience with Synergaise</h1>
-          <p className="text-lg text-muted-foreground">
-            We'd love your feedback — it helps us grow and show what kind of impact we're creating for clients. Choose the option that best fits your time today.
-          </p>
+          <div className="flex justify-between items-start mb-8">
+            <img src={THEME.logoUrl} alt="Synergaise" className="h-10" />
+            <div className="w-8 h-8 rounded-full bg-foreground/5" />
+          </div>
+          
+          <div className="space-y-4">
+            <h1 className="text-4xl font-heading font-bold text-foreground">Share Your Experience with Synergaise</h1>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+              We'd love your feedback — it helps us grow and show what kind of impact we're creating for clients. Choose the option that best fits your time today.
+            </p>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <button
               onClick={() => setCurrentPage('short_review')}
-              className="flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-accent rounded-lg font-semibold transition-all hover:scale-105"
+              className="group flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-all duration-200 hover:bg-primary-hover hover:scale-[0.98] active:scale-95"
             >
-              Short Review (2-3 mins) <ChevronRight className="w-5 h-5" />
+              Short Review (2-3 mins) 
+              <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </button>
             <button
               onClick={() => setCurrentPage('testimonial_deepdive')}
-              className="flex items-center justify-center gap-2 px-8 py-4 bg-secondary hover:bg-muted rounded-lg font-semibold transition-all hover:scale-105"
+              className="group flex items-center justify-center gap-2 px-8 py-4 bg-secondary text-secondary-foreground rounded-xl font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-all duration-200 hover:bg-secondary/80 hover:scale-[0.98] active:scale-95"
             >
-              Testimonial Deep-Dive (5–7 mins) <ChevronRight className="w-5 h-5" />
+              Testimonial Deep-Dive (5–7 mins) 
+              <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </button>
           </div>
+
           <p className="text-sm text-muted-foreground pt-4">
             All responses are confidential until you grant permission for public use.
           </p>
@@ -267,19 +277,23 @@ const ReviewHub = () => {
 
   if (currentPage === 'short_review') {
     return (
-      <div className="min-h-screen p-6 bg-background text-foreground">
+      <div className="min-h-screen p-6 bg-background">
         <div className="max-w-3xl mx-auto space-y-8">
-          <button onClick={() => setCurrentPage('landing')} className="text-muted-foreground hover:text-foreground transition-colors">
+          <button 
+            onClick={() => setCurrentPage('landing')} 
+            className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+          >
             ← Back
           </button>
+          
           <div className="space-y-4">
-            <h1 className="text-3xl font-bold">Short Review</h1>
+            <h1 className="text-3xl font-heading font-bold text-foreground">Short Review</h1>
             <p className="text-muted-foreground">
               Perfect for featuring on our website, proposals, and case studies. Just a few quick questions about your experience.
             </p>
           </div>
 
-          <div className="space-y-6 bg-card p-8 rounded-xl border border-border">
+          <div className="space-y-6 bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
             <TextInput id="name" label="Full Name" required maxLength={100} />
             <TextInput id="company" label="Company Name" required maxLength={100} />
             <TextInput id="email" label="Email" type="email" maxLength={100} />
@@ -326,7 +340,7 @@ const ReviewHub = () => {
             />
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium">How would you rate your experience?</label>
+              <label className="block text-sm font-medium text-foreground">How would you rate your experience?</label>
               <StarRating value={rating} onChange={setRating} />
             </div>
 
@@ -338,7 +352,7 @@ const ReviewHub = () => {
             />
 
             {submitError && (
-              <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive rounded-lg">
+              <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive rounded-xl">
                 <AlertCircle className="w-5 h-5 text-destructive" />
                 <p className="text-destructive">{submitError}</p>
               </div>
@@ -347,9 +361,9 @@ const ReviewHub = () => {
             <button
               onClick={() => handleSubmit('Short Review')}
               disabled={isSubmitting}
-              className="w-full py-4 bg-primary hover:bg-accent disabled:bg-muted disabled:cursor-not-allowed rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-muted disabled:cursor-not-allowed rounded-xl font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-all duration-200 flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Review'}
+              {isSubmitting ? 'Submitting...' : 'SEND REVIEW'}
               {!isSubmitting && <ChevronRight className="w-5 h-5" />}
             </button>
           </div>
@@ -364,37 +378,40 @@ const ReviewHub = () => {
 
   if (currentPage === 'testimonial_deepdive') {
     return (
-      <div className="min-h-screen p-6 bg-background text-foreground">
+      <div className="min-h-screen p-6 bg-background">
         <div className="max-w-3xl mx-auto space-y-8">
           <div className="flex justify-between items-center">
-            <button onClick={() => setCurrentPage('landing')} className="text-muted-foreground hover:text-foreground transition-colors">
+            <button 
+              onClick={() => setCurrentPage('landing')} 
+              className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+            >
               ← Back
             </button>
             {draftSaved && (
-              <div className="flex items-center gap-2 text-green-400 text-sm">
+              <div className="flex items-center gap-2 text-secondary text-sm">
                 <Check className="w-4 h-4" /> Draft saved
               </div>
             )}
           </div>
 
           <div className="space-y-4">
-            <h1 className="text-3xl font-bold">Testimonial Deep-Dive</h1>
+            <h1 className="text-3xl font-heading font-bold text-foreground">Testimonial Deep-Dive</h1>
             <p className="text-muted-foreground">
               For detailed story-style testimonials, Looms, or comprehensive case studies. Your story helps potential clients understand the real impact.
             </p>
           </div>
 
           <div className="space-y-8">
-            <div className="bg-card p-8 rounded-xl space-y-6 border border-border">
-              <h2 className="text-xl font-semibold border-b border-border pb-3">Your Information</h2>
+            <div className="bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl space-y-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+              <h2 className="text-xl font-heading font-semibold border-b border-border pb-3">Your Information</h2>
               <TextInput id="name" label="Full Name" required maxLength={100} />
               <TextInput id="company" label="Company / Brand" required maxLength={100} />
               <TextInput id="role" label="Role / Title" maxLength={100} />
               <TextInput id="email" label="Email" type="email" maxLength={100} />
             </div>
 
-            <div className="bg-card p-8 rounded-xl space-y-6 border border-border">
-              <h2 className="text-xl font-semibold border-b border-border pb-3">Your Story</h2>
+            <div className="bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl space-y-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+              <h2 className="text-xl font-heading font-semibold border-b border-border pb-3">Your Story</h2>
               
               <TextArea 
                 id="q1_challenges" 
@@ -418,8 +435,8 @@ const ReviewHub = () => {
               />
             </div>
 
-            <div className="bg-card p-8 rounded-xl space-y-6 border border-border">
-              <h2 className="text-xl font-semibold border-b border-border pb-3">The Impact</h2>
+            <div className="bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl space-y-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+              <h2 className="text-xl font-heading font-semibold border-b border-border pb-3">The Impact</h2>
               
               <TextArea 
                 id="q4_impact" 
@@ -449,13 +466,13 @@ const ReviewHub = () => {
               />
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium">Overall experience rating</label>
+                <label className="block text-sm font-medium text-foreground">Overall experience rating</label>
                 <StarRating value={rating} onChange={setRating} />
               </div>
             </div>
 
-            <div className="bg-card p-8 rounded-xl space-y-6 border border-border">
-              <h2 className="text-xl font-semibold border-b border-border pb-3">Permissions & Media</h2>
+            <div className="bg-gradient-to-br from-card-gradient-start to-card-gradient-end p-8 rounded-xl space-y-6 shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+              <h2 className="text-xl font-heading font-semibold border-b border-border pb-3">Permissions & Media</h2>
               
               <SingleChoice 
                 id="q8_feature_permission" 
@@ -465,26 +482,29 @@ const ReviewHub = () => {
               />
               
               <div className="space-y-2">
-                <label className="block text-sm font-medium">
+                <label className="block text-sm font-medium text-foreground">
                   Upload a photo or company logo <span className="text-muted-foreground">(optional)</span>
                 </label>
                 <p className="text-xs text-muted-foreground">JPG, PNG, or SVG up to 5MB</p>
                 {!uploadedFile ? (
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition-colors">
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all duration-200">
                     <Upload className="w-8 h-8 text-muted-foreground mb-2" />
                     <span className="text-sm text-muted-foreground">Click to upload</span>
                     <input type="file" accept="image/jpeg,image/png,image/svg+xml" onChange={handleFileUpload} className="hidden" />
                   </label>
                 ) : (
-                  <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-muted rounded-xl">
                     <div className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-green-400" />
+                      <Check className="w-5 h-5 text-secondary" />
                       <div>
-                        <p className="text-sm font-medium">{uploadedFile.name}</p>
-                        <p className="text-xs text-muted-foreground">{(uploadedFile.size / 1024).toFixed(1)} KB</p>
+                        <p className="text-sm font-medium text-foreground">{uploadedFile.name}</p>
+                        <p className="text-xs text-muted-foreground font-metrics">{(uploadedFile.size / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
-                    <button onClick={() => setUploadedFile(null)} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <button 
+                      onClick={() => setUploadedFile(null)} 
+                      className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+                    >
                       <X className="w-5 h-5" />
                     </button>
                   </div>
@@ -494,7 +514,7 @@ const ReviewHub = () => {
             </div>
 
             {submitError && (
-              <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive rounded-lg">
+              <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive rounded-xl">
                 <AlertCircle className="w-5 h-5 text-destructive" />
                 <p className="text-destructive">{submitError}</p>
               </div>
@@ -503,9 +523,9 @@ const ReviewHub = () => {
             <button
               onClick={() => handleSubmit('Testimonial Deep-Dive')}
               disabled={isSubmitting}
-              className="w-full py-4 bg-primary hover:bg-accent disabled:bg-muted disabled:cursor-not-allowed rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-muted disabled:cursor-not-allowed rounded-xl font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-all duration-200 flex items-center justify-center gap-2 hover:scale-[0.98] active:scale-95"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Testimonial'}
+              {isSubmitting ? 'Submitting...' : 'SEND REVIEW'}
               {!isSubmitting && <ChevronRight className="w-5 h-5" />}
             </button>
           </div>
@@ -520,12 +540,12 @@ const ReviewHub = () => {
 
   if (currentPage === 'success') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="max-w-2xl w-full text-center space-y-6 animate-in fade-in zoom-in duration-500">
-          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto">
-            <Check className="w-10 h-10 text-white" />
+          <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto shadow-[0_4px_10px_rgba(0,0,0,0.05)]">
+            <Check className="w-10 h-10 text-secondary-foreground" />
           </div>
-          <h1 className="text-4xl font-bold">Thank You! 🙏</h1>
+          <h1 className="text-4xl font-heading font-bold text-foreground">Thank You! 🙏</h1>
           <p className="text-lg text-muted-foreground">
             {formData.formType === 'Short Review' 
               ? "We appreciate your time — your feedback helps us improve and inspire others. We'll let you know once it goes live!"
@@ -538,7 +558,7 @@ const ReviewHub = () => {
               setRating(0);
               setUploadedFile(null);
             }}
-            className="px-8 py-3 bg-primary hover:bg-accent rounded-lg font-semibold transition-all hover:scale-105"
+            className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-hover rounded-xl font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-all duration-200 hover:scale-[0.98] active:scale-95"
           >
             Return Home
           </button>
