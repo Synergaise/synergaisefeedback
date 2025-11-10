@@ -109,18 +109,17 @@ const ReviewHub = () => {
     setSubmitError(null);
 
     const payload = {
-      formType,
+      reviewType: formType,
       submittedAt: new Date().toISOString(),
-      data: { ...formData, rating: rating || null },
+      ...formData,
+      rating: rating || null,
       file: uploadedFile,
-      metadata: {
-        userAgent: navigator.userAgent,
-        referrer: document.referrer
-      }
+      userAgent: navigator.userAgent,
+      referrer: document.referrer
     };
 
     try {
-      const response = await fetch('https://synergaise.app.n8n.cloud/webhook-test/13e2cfdd-9291-4609-abe9-b545ac5c270e', {
+      const response = await fetch('https://synergaise.app.n8n.cloud/webhook-test/review-collection', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
