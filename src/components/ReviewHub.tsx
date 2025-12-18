@@ -279,7 +279,7 @@ const ReviewHub = () => {
           </div>
           
           <div className="space-y-4">
-            <h1 className="text-4xl font-heading font-bold text-foreground">Share Your Experience with SYNERG<span className="text-primary">AI</span>SE</h1>
+            <h1 className="text-4xl font-heading font-bold text-foreground">Share Your Experience with SYNERG<span className="text-primary italic">AI</span>SE</h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               We'd love your feedback — it helps us grow and show what kind of impact we're creating for clients. Choose the option that best fits your time today.
             </p>
